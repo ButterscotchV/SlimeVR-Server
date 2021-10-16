@@ -67,6 +67,7 @@ public class HumanSkeletonWithLegs extends HumanSkeletonWithWaist {
 	
 	protected boolean extendedPelvisModel = true;
 	protected boolean extendedKneeModel = false;
+	protected boolean extendedSpineModel = true;
 
 	public HumanSkeletonWithLegs(VRServer server, List<ComputedHumanPoseTracker> computedTrackers) {
 		super(server, computedTrackers);
@@ -108,7 +109,8 @@ public class HumanSkeletonWithLegs extends HumanSkeletonWithWaist {
 		footLength = server.config.getFloat("body.footLength", footLength);
 		//extendedPelvisModel = server.config.getBoolean("body.model.extendedPelvis", extendedPelvisModel);
 		extendedKneeModel = server.config.getBoolean("body.model.extendedKnee", extendedKneeModel);
-		
+		extendedSpineModel = server.config.getBoolean("body.model.extendedSpine", extendedSpineModel);
+
 		waistNode.attachChild(leftHipNode);
 		leftHipNode.localTransform.setTranslation(-hipsWidth / 2, 0, 0);
 		
@@ -210,6 +212,8 @@ public class HumanSkeletonWithLegs extends HumanSkeletonWithWaist {
 			return extendedPelvisModel;
 		case "Extended knee model":
 			return extendedKneeModel;
+		case "Extended spine model":
+			return extendedSpineModel;
 		}
 		return super.getSkeletonConfigBoolean(config);
 	}
@@ -224,6 +228,10 @@ public class HumanSkeletonWithLegs extends HumanSkeletonWithWaist {
 		case "Extended knee model":
 			extendedKneeModel = newState;
 			server.config.setProperty("body.model.extendedKnee", newState);
+			break;
+		case "Extended spine model":
+			extendedSpineModel = newState;
+			server.config.setProperty("body.model.extendedSpine", newState);
 			break;
 		default:
 			super.setSkeletonConfigBoolean(config, newState);
@@ -280,6 +288,25 @@ public class HumanSkeletonWithLegs extends HumanSkeletonWithWaist {
 			waistNode.localTransform.setRotation(kneeBuf);
 			// TODO : Use vectors to add like 50% of wasit tracker yaw to waist node to reduce drift and let user take weird poses
 			// TODO Set virtual waist node yaw to that of waist node
+		}
+
+		if (extendedSpineModel) {
+			float angle = neckNode.localTransform.getRotation().dot(waistNode.localTransform.getRotation());
+			if (angle < 170f) {
+				if (angle <= 0.001f) {
+					// Handle straight position
+					float offset = -waistDistance / 2F;
+
+					chestNode.localTransform.setTranslation(0, offset, 0);
+					waistNode.localTransform.setTranslation(0, offset, 0);
+				} else {
+					double radius = (waistDistance * 180f) / (Math.PI * (angle));
+					float offset = (float)-(radius / Math.tan(Math.toRadians(180f - angle) / 2f));
+
+					chestNode.localTransform.setTranslation(0, offset, 0);
+					waistNode.localTransform.setTranslation(0, offset, 0);
+				}
+			}
 		}
 	}
 	

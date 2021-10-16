@@ -65,6 +65,31 @@ public class SkeletonConfig extends EJBagNoStretch {
 			}}, s(c(0, row, 2), 3, 1));
 			row++;
 			//*/
+
+			add(new JCheckBox("Extended spine model") {{
+				addItemListener(new ItemListener() {
+				    @Override
+				    public void itemStateChanged(ItemEvent e) {
+				        if(e.getStateChange() == ItemEvent.SELECTED) {//checkbox has been selected
+				        	if(newSkeleton != null && newSkeleton instanceof HumanSkeletonWithLegs) {
+				        		HumanSkeletonWithLegs hswl = (HumanSkeletonWithLegs) newSkeleton;
+				        		hswl.setSkeletonConfigBoolean("Extended spine model", true);
+				        	}
+				        } else {
+				        	if(newSkeleton != null && newSkeleton instanceof HumanSkeletonWithLegs) {
+				        		HumanSkeletonWithLegs hswl = (HumanSkeletonWithLegs) newSkeleton;
+				        		hswl.setSkeletonConfigBoolean("Extended spine model", false);
+				        	}
+				        }
+				    }
+				});
+				if(newSkeleton != null && newSkeleton instanceof HumanSkeletonWithLegs) {
+	        		HumanSkeletonWithLegs hswl = (HumanSkeletonWithLegs) newSkeleton;
+	        		setSelected(hswl.getSkeletonConfigBoolean("Extended spine model"));
+				}
+			}}, s(c(0, row, 1), 3, 1));
+			row++;
+
 			/*
 			add(new JCheckBox("Extended knee model") {{
 				addItemListener(new ItemListener() {
