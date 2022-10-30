@@ -25,7 +25,7 @@ public abstract class PoseDataStream implements AutoCloseable {
 	public void writeHeader(Skeleton skeleton, PoseStreamer streamer) throws IOException {
 	}
 
-	abstract void writeFrame(Skeleton skeleton) throws IOException;
+	public abstract void writeFrame(Skeleton skeleton) throws IOException;
 
 	public void writeFooter(Skeleton skeleton) throws IOException {
 	}
