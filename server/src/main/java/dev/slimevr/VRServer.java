@@ -10,6 +10,7 @@ import dev.slimevr.osc.OSCRouter;
 import dev.slimevr.osc.VRCOSCHandler;
 import dev.slimevr.platform.SteamVRBridge;
 import dev.slimevr.platform.linux.UnixSocketBridge;
+import dev.slimevr.mango.MangoDataCollector;
 import dev.slimevr.platform.windows.WindowsNamedPipeBridge;
 import dev.slimevr.poserecorder.BVHRecorder;
 import dev.slimevr.protocol.ProtocolAPI;
@@ -60,6 +61,7 @@ public class VRServer extends Thread {
 	private final ProtocolAPI protocolAPI;
 	private final ConfigManager configManager;
 	private final Timer timer = new Timer();
+	private final MangoDataCollector mangoDataCollector;
 	private final NanoTimer fpsTimer = new NanoTimer();
 
 	/**
@@ -87,6 +89,8 @@ public class VRServer extends Thread {
 		// TODO Multiple processors
 		humanPoseProcessor = new HumanPoseProcessor(this);
 		shareTrackers = humanPoseProcessor.getComputedTrackers();
+
+		mangoDataCollector = new MangoDataCollector(this);
 
 		// Start server for SlimeVR trackers
 		int trackerPort = configManager.getVrConfig().getServer().getTrackerPort();
