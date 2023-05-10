@@ -15,7 +15,8 @@ class PositionOffsetError : IAutoBoneError {
 			trainingStep.cursor1,
 			trainingStep.cursor2,
 			trainingStep.skeleton1.skeleton,
-			trainingStep.skeleton2.skeleton
+			trainingStep.skeleton2.skeleton,
+			trainingStep.skeletonNormalScale
 		)
 	}
 
@@ -25,16 +26,17 @@ class PositionOffsetError : IAutoBoneError {
 		cursor2: Int,
 		skeleton1: HumanSkeleton,
 		skeleton2: HumanSkeleton,
+		scale: Float = 1f,
 	): Float {
 		var offset = 0f
 		var offsetCount = 0
 		for (tracker in trackers) {
 			val trackerFrame1 = tracker.tryGetFrame(cursor1) ?: continue
-			val position1 = trackerFrame1.tryGetPosition() ?: continue
+			val position1 = trackerFrame1.tryGetPosition()?.apply { this * scale } ?: continue
 			val trackerRole1 = trackerFrame1.tryGetTrackerPosition()?.trackerRole ?: continue
 
 			val trackerFrame2 = tracker.tryGetFrame(cursor2) ?: continue
-			val position2 = trackerFrame2.tryGetPosition() ?: continue
+			val position2 = trackerFrame2.tryGetPosition()?.apply { this * scale } ?: continue
 			val trackerRole2 = trackerFrame2.tryGetTrackerPosition()?.trackerRole ?: continue
 
 			val computedTracker1 = skeleton1.getComputedTracker(trackerRole1) ?: continue

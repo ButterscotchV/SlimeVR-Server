@@ -17,6 +17,8 @@ import io.eiren.util.logging.LogManager
 import io.github.axisangles.ktmath.Vector3
 import org.apache.commons.lang3.tuple.Pair
 import java.io.File
+import java.lang.Float.isInfinite
+import java.lang.Float.isNaN
 import java.util.*
 import java.util.function.BiConsumer
 import java.util.function.Consumer
@@ -162,28 +164,29 @@ class AutoBone(server: VRServer) {
 	fun applyConfig(
 		configConsumer: BiConsumer<SkeletonConfigOffsets, Float>,
 		offsets: Map<BoneType, Float> = this.offsets,
+		scale: Float = 1f,
 	): Boolean {
 		return try {
 			val headOffset = offsets[BoneType.HEAD]
 			if (headOffset != null) {
-				configConsumer.accept(SkeletonConfigOffsets.HEAD, headOffset)
+				configConsumer.accept(SkeletonConfigOffsets.HEAD, headOffset * scale)
 			}
 			val neckOffset = offsets[BoneType.NECK]
 			if (neckOffset != null) {
-				configConsumer.accept(SkeletonConfigOffsets.NECK, neckOffset)
+				configConsumer.accept(SkeletonConfigOffsets.NECK, neckOffset * scale)
 			}
 			val chestOffset = offsets[BoneType.CHEST]
 			val waistOffset = offsets[BoneType.WAIST]
 			val hipOffset = offsets[BoneType.HIP]
 			if (chestOffset != null) {
 				configConsumer
-					.accept(SkeletonConfigOffsets.CHEST, chestOffset)
+					.accept(SkeletonConfigOffsets.CHEST, chestOffset * scale)
 			}
 			if (waistOffset != null) {
-				configConsumer.accept(SkeletonConfigOffsets.WAIST, waistOffset)
+				configConsumer.accept(SkeletonConfigOffsets.WAIST, waistOffset * scale)
 			}
 			if (hipOffset != null) {
-				configConsumer.accept(SkeletonConfigOffsets.HIP, hipOffset)
+				configConsumer.accept(SkeletonConfigOffsets.HIP, hipOffset * scale)
 			}
 			var hipWidthOffset = offsets[BoneType.LEFT_HIP]
 			if (hipWidthOffset == null) {
@@ -191,7 +194,7 @@ class AutoBone(server: VRServer) {
 			}
 			if (hipWidthOffset != null) {
 				configConsumer
-					.accept(SkeletonConfigOffsets.HIPS_WIDTH, hipWidthOffset * 2f)
+					.accept(SkeletonConfigOffsets.HIPS_WIDTH, hipWidthOffset * 2f * scale)
 			}
 			var upperLegOffset = offsets[BoneType.LEFT_UPPER_LEG]
 			if (upperLegOffset == null) {
@@ -203,10 +206,10 @@ class AutoBone(server: VRServer) {
 			}
 			if (upperLegOffset != null) {
 				configConsumer
-					.accept(SkeletonConfigOffsets.UPPER_LEG, upperLegOffset)
+					.accept(SkeletonConfigOffsets.UPPER_LEG, upperLegOffset * scale)
 			}
 			if (lowerLegOffset != null) {
-				configConsumer.accept(SkeletonConfigOffsets.LOWER_LEG, lowerLegOffset)
+				configConsumer.accept(SkeletonConfigOffsets.LOWER_LEG, lowerLegOffset * scale)
 			}
 			true
 		} catch (e: Exception) {
@@ -217,20 +220,24 @@ class AutoBone(server: VRServer) {
 	fun applyConfig(
 		skeletonConfig: MutableMap<SkeletonConfigOffsets, Float>,
 		offsets: Map<BoneType, Float> = this.offsets,
+		scale: Float = 1f,
 	): Boolean {
-		return applyConfig({ key: SkeletonConfigOffsets, value: Float -> skeletonConfig[key] = value }, offsets)
+		return applyConfig({ key: SkeletonConfigOffsets, value: Float ->
+			skeletonConfig[key] = value
+		}, offsets, scale)
 	}
 
 	fun applyConfig(
 		humanPoseManager: HumanPoseManager,
 		offsets: Map<BoneType, Float> = this.offsets,
+		scale: Float = 1f,
 	): Boolean {
 		return applyConfig({ key: SkeletonConfigOffsets?, newLength: Float? ->
 			humanPoseManager.setOffset(
 				key,
 				newLength
 			)
-		}, offsets)
+		}, offsets, scale)
 	}
 
 	@JvmOverloads
@@ -423,8 +430,8 @@ class AutoBone(server: VRServer) {
 				val frameCursor2 = frameCursor + cursorOffset
 
 				// Apply the current adjusted config to both skeletons
-				applyConfig(trainingStep.skeleton1)
-				applyConfig(trainingStep.skeleton2)
+				applyConfig(trainingStep.skeleton1, scale = trainingStep.skeletonNormalScale)
+				applyConfig(trainingStep.skeleton2, scale = trainingStep.skeletonNormalScale)
 
 				// Then set the frame cursors and apply them to both skeletons
 				if (config.randomizeFrameOrder && randomFrameIndices != null) {
@@ -479,7 +486,7 @@ class AutoBone(server: VRServer) {
 		val error = errorFunc(errorDeriv)
 
 		// In case of fire
-		if (java.lang.Float.isNaN(error) || java.lang.Float.isInfinite(error)) {
+		if (isNaN(error) || isInfinite(error)) {
 			// Extinguish
 			LogManager
 				.warning(
@@ -556,8 +563,8 @@ class AutoBone(server: VRServer) {
 
 			// Apply new offset length
 			intermediateOffsets[entry.key] = newLength
-			applyConfig(skeleton1, intermediateOffsets)
-			applyConfig(skeleton2, intermediateOffsets)
+			applyConfig(skeleton1, intermediateOffsets, trainingStep.skeletonNormalScale)
+			applyConfig(skeleton2, intermediateOffsets, trainingStep.skeletonNormalScale)
 
 			// Update the skeleton poses for the new offset length
 			skeleton1.update()
@@ -572,8 +579,8 @@ class AutoBone(server: VRServer) {
 			// Reset the length to minimize bias in other variables,
 			// it's applied later
 			intermediateOffsets[entry.key] = originalLength
-			applyConfig(skeleton1, intermediateOffsets)
-			applyConfig(skeleton2, intermediateOffsets)
+			applyConfig(skeleton1, intermediateOffsets, trainingStep.skeletonNormalScale)
+			applyConfig(skeleton2, intermediateOffsets, trainingStep.skeletonNormalScale)
 		}
 
 		if (trainingStep.config.scaleEachStep) {

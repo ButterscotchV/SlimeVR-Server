@@ -24,6 +24,8 @@ class AutoBoneStep(
 	var currentHmdHeight: Float = 0f,
 ) {
 
+	val skeletonNormalScale: Float = 1f / targetHmdHeight
+
 	val maxFrameCount = trainingFrames.maxFrameCount
 
 	val framePlayer1 = TrackerFramesPlayer(trainingFrames)
@@ -38,6 +40,9 @@ class AutoBoneStep(
 	val errorStats = StatsCalculator()
 
 	init {
+		// Scale the players to be normalized
+		framePlayer1.setScales(skeletonNormalScale)
+		framePlayer2.setScales(skeletonNormalScale)
 		// Load server configs into the skeleton
 		skeleton1.loadFromConfig(serverConfig)
 		skeleton2.loadFromConfig(serverConfig)
@@ -60,6 +65,11 @@ class AutoBoneStep(
 		framePlayer2.setCursors(cursor2)
 		skeleton1.update()
 		skeleton2.update()
+	}
+
+	fun setScales(scale: Float) {
+		framePlayer1.setScales(scale)
+		framePlayer2.setScales(scale)
 	}
 
 	val heightOffset: Float

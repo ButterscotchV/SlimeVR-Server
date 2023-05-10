@@ -14,12 +14,14 @@ class PositionError : IAutoBoneError {
 				getPositionError(
 					trackers,
 					trainingStep.cursor1,
-					trainingStep.skeleton1.skeleton
+					trainingStep.skeleton1.skeleton,
+					trainingStep.skeletonNormalScale
 				) +
 					getPositionError(
 						trackers,
 						trainingStep.cursor2,
-						trainingStep.skeleton2.skeleton
+						trainingStep.skeleton2.skeleton,
+						trainingStep.skeletonNormalScale
 					)
 				) /
 				2f
@@ -31,12 +33,13 @@ class PositionError : IAutoBoneError {
 			trackers: List<TrackerFrames>,
 			cursor: Int,
 			skeleton: HumanSkeleton,
+			scale: Float = 1f,
 		): Float {
 			var offset = 0f
 			var offsetCount = 0
 			for (tracker in trackers) {
 				val trackerFrame = tracker.tryGetFrame(cursor) ?: continue
-				val position = trackerFrame.tryGetPosition() ?: continue
+				val position = trackerFrame.tryGetPosition()?.apply { this * scale } ?: continue
 				val trackerRole = trackerFrame.tryGetTrackerPosition()?.trackerRole ?: continue
 
 				val computedTracker = skeleton.getComputedTracker(trackerRole) ?: continue

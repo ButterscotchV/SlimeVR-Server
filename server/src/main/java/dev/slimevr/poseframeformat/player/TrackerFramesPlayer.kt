@@ -35,4 +35,10 @@ class TrackerFramesPlayer(vararg val frameHolders: TrackerFrames) {
 			playerTracker.cursor = index
 		}
 	}
+
+	fun setScales(scale: Float = 1f) {
+		for (playerTracker in playerTrackers) {
+			playerTracker.scale = scale
+		}
+	}
 }

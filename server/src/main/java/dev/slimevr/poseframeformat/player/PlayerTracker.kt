@@ -13,6 +13,13 @@ class PlayerTracker(val trackerFrames: TrackerFrames, val tracker: Tracker, priv
 			setTrackerStateFromIndex(limitedCursor)
 		}
 
+	var scale: Float = 1f
+		set(value) {
+			field = value
+			// Update current values from the new scale
+			setTrackerStateFromIndex()
+		}
+
 	init {
 		setTrackerStateFromIndex(limitCursor())
 	}
@@ -54,12 +61,12 @@ class PlayerTracker(val trackerFrames: TrackerFrames, val tracker: Tracker, priv
 
 		val position = frame.tryGetPosition()
 		if (position != null) {
-			tracker.position = position
+			tracker.position = position * scale
 		}
 
 		val acceleration = frame.tryGetAcceleration()
 		if (acceleration != null) {
-			tracker.acceleration = acceleration
+			tracker.acceleration = acceleration * scale
 		}
 	}
 }

@@ -13,7 +13,7 @@ class BodyProportionError : IAutoBoneError {
 	override fun getStepError(trainingStep: AutoBoneStep): Float {
 		return getBodyProportionError(
 			trainingStep.skeleton1,
-			trainingStep.currentHmdHeight
+			trainingStep.currentHmdHeight * trainingStep.skeletonNormalScale
 		)
 	}
 
