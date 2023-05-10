@@ -24,7 +24,8 @@ class AutoBoneStep(
 	var currentHmdHeight: Float = 0f,
 ) {
 
-	val skeletonNormalScale: Float = 1f / targetHmdHeight
+	// The scale to normalize the skeleton with
+	val skeletonScale: Float = 1f / targetHmdHeight
 
 	val maxFrameCount = trainingFrames.maxFrameCount
 
@@ -41,8 +42,8 @@ class AutoBoneStep(
 
 	init {
 		// Scale the players to be normalized
-		framePlayer1.setScales(skeletonNormalScale)
-		framePlayer2.setScales(skeletonNormalScale)
+		framePlayer1.setScales(skeletonScale)
+		framePlayer2.setScales(skeletonScale)
 		// Load server configs into the skeleton
 		skeleton1.loadFromConfig(serverConfig)
 		skeleton2.loadFromConfig(serverConfig)

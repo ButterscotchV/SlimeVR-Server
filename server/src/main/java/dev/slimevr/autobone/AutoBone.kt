@@ -430,8 +430,8 @@ class AutoBone(server: VRServer) {
 				val frameCursor2 = frameCursor + cursorOffset
 
 				// Apply the current adjusted config to both skeletons
-				applyConfig(trainingStep.skeleton1, scale = trainingStep.skeletonNormalScale)
-				applyConfig(trainingStep.skeleton2, scale = trainingStep.skeletonNormalScale)
+				applyConfig(trainingStep.skeleton1, scale = trainingStep.skeletonScale)
+				applyConfig(trainingStep.skeleton2, scale = trainingStep.skeletonScale)
 
 				// Then set the frame cursors and apply them to both skeletons
 				if (config.randomizeFrameOrder && randomFrameIndices != null) {
@@ -554,7 +554,7 @@ class AutoBone(server: VRServer) {
 			// Scale by the ratio for smooth adjustment and more
 			// stable results
 			val curAdjustVal = adjustVal * -dotLength / totalLength
-			val newLength = originalLength + curAdjustVal
+			val newLength = originalLength + (curAdjustVal / trainingStep.skeletonScale)
 
 			// No small or negative numbers!!! Bad algorithm!
 			if (newLength < 0.01f) {
@@ -563,8 +563,8 @@ class AutoBone(server: VRServer) {
 
 			// Apply new offset length
 			intermediateOffsets[entry.key] = newLength
-			applyConfig(skeleton1, intermediateOffsets, trainingStep.skeletonNormalScale)
-			applyConfig(skeleton2, intermediateOffsets, trainingStep.skeletonNormalScale)
+			applyConfig(skeleton1, intermediateOffsets, trainingStep.skeletonScale)
+			applyConfig(skeleton2, intermediateOffsets, trainingStep.skeletonScale)
 
 			// Update the skeleton poses for the new offset length
 			skeleton1.update()
@@ -579,8 +579,8 @@ class AutoBone(server: VRServer) {
 			// Reset the length to minimize bias in other variables,
 			// it's applied later
 			intermediateOffsets[entry.key] = originalLength
-			applyConfig(skeleton1, intermediateOffsets, trainingStep.skeletonNormalScale)
-			applyConfig(skeleton2, intermediateOffsets, trainingStep.skeletonNormalScale)
+			applyConfig(skeleton1, intermediateOffsets, trainingStep.skeletonScale)
+			applyConfig(skeleton2, intermediateOffsets, trainingStep.skeletonScale)
 		}
 
 		if (trainingStep.config.scaleEachStep) {
