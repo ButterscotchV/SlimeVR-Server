@@ -145,18 +145,15 @@ data class SkeletonConfigImmutable(
 					when (annotation) {
 						is OffsetEnumVal -> {
 							paramMap[parameter] =
-								config.offsets[annotation.enumVal.configKey]
-									?: default.getOffset(annotation.enumVal)
+								config.offsets[annotation.enumVal.configKey] ?: continue
 						}
 						is ToggleEnumVal -> {
 							paramMap[parameter] =
-								config.toggles[annotation.enumVal.configKey]
-									?: default.getToggle(annotation.enumVal)
+								config.toggles[annotation.enumVal.configKey] ?: continue
 						}
 						is ValueEnumVal -> {
 							paramMap[parameter] =
-								config.values[annotation.enumVal.configKey]
-									?: default.getValue(annotation.enumVal)
+								config.values[annotation.enumVal.configKey] ?: continue
 						}
 					}
 				}
