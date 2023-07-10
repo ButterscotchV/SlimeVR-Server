@@ -66,9 +66,14 @@ class Tracker @JvmOverloads constructor(
 ) {
 	private val timer = BufferedTimer(1f)
 	private var timeAtLastUpdate: Long = 0
+
 	private var rotation = Quaternion.IDENTITY
 	private var acceleration = Vector3.NULL
 	var position = Vector3.NULL
+	var hasMagRotation = false
+	private var magRotation = Quaternion.IDENTITY
+	var magAccuracy = 0f
+
 	val resetsHandler: TrackerResetsHandler = TrackerResetsHandler(this)
 	val filteringHandler: TrackerFilteringHandler = TrackerFilteringHandler()
 	var batteryVoltage: Float? = null
@@ -303,6 +308,18 @@ class Tracker @JvmOverloads constructor(
 	}
 
 	/**
+	 * Gets the adjusted tracker magnetometer rotation after mounting corrections.
+	 */
+	fun getMagRotation(): Quaternion {
+		var rot = magRotation
+		if (needsReset) {
+			rot = resetsHandler.getMountingAdjustedRotationFrom(rot)
+		}
+
+		return rot
+	}
+
+	/**
 	 * Gets the identity-adjusted tracker rotation after some corrections
 	 * (filtering, identity reset and identity mounting).
 	 * This is used for debugging/visualizing tracker data
@@ -344,6 +361,13 @@ class Tracker @JvmOverloads constructor(
 	 */
 	fun setAcceleration(vec: Vector3) {
 		this.acceleration = vec
+	}
+
+	/**
+	 * Sets the raw (unadjusted) magnetometer rotation of the tracker.
+	 */
+	fun setMagRotation(magRotation: Quaternion) {
+		this.magRotation = magRotation
 	}
 
 	fun isImu(): Boolean {

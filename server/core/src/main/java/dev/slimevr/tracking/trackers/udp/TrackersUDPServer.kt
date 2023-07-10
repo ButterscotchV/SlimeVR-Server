@@ -319,14 +319,19 @@ class TrackersUDPServer(private val port: Int, name: String, private val tracker
 					}
 
 					UDPPacket17RotationData.DATA_TYPE_CORRECTION -> {
-// 						tracker.rotMagQuaternion.set(rot17);
-// 						tracker.magCalibrationStatus = rotationData.calibrationInfo;
-// 						tracker.hasNewCorrectionData = true;
+						tracker.setMagRotation(rot17)
+						tracker.hasMagRotation = true
+						// tracker.magCalibrationStatus = rotationData.calibrationInfo;
+						// tracker.hasNewCorrectionData = true;
 						// Not implemented in server
 					}
 				}
 			}
-			is UDPPacket18MagnetometerAccuracy -> {}
+			is UDPPacket18MagnetometerAccuracy -> {
+				tracker = connection?.getTracker(packet.sensorId)
+				if (tracker == null) return
+				tracker.magAccuracy = packet.accuracyInfo
+			}
 			is UDPPacket4Acceleration -> {
 				tracker = connection?.getTracker(packet.sensorId)
 				if (tracker == null) return
