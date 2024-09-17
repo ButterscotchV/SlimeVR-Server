@@ -8,6 +8,7 @@ import dev.slimevr.VRServer
 import dev.slimevr.bridge.Bridge
 import dev.slimevr.desktop.firmware.DesktopSerialFlashingHandler
 import dev.slimevr.desktop.games.vrchat.DesktopVRCConfigHandler
+import dev.slimevr.autobone.LBFGS
 import dev.slimevr.desktop.platform.SteamVRBridge
 import dev.slimevr.desktop.platform.linux.UnixSocketBridge
 import dev.slimevr.desktop.platform.linux.UnixSocketRpcBridge
@@ -117,6 +118,11 @@ fun main(args: Array<String>) {
 		LogManager.closeLogger()
 		return
 	}
+
+	val test = LBFGS()
+	test.main()
+	return
+
 	try {
 		val configDir = resolveConfig()
 		LogManager.info("Using config dir: $configDir")
