@@ -5,6 +5,7 @@ package dev.slimevr.desktop
 import dev.slimevr.Keybinding
 import dev.slimevr.SLIMEVR_IDENTIFIER
 import dev.slimevr.VRServer
+import dev.slimevr.autobone.LBFGS
 import dev.slimevr.bridge.Bridge
 import dev.slimevr.config.ConfigManager
 import dev.slimevr.desktop.firmware.DesktopSerialFlashingHandler
@@ -123,6 +124,11 @@ fun main(args: Array<String>) {
 		LogManager.closeLogger()
 		return
 	}
+
+	val test = LBFGS()
+	test.main()
+	return
+
 	try {
 		val vrServer = VRServer(
 			::provideBridges,
