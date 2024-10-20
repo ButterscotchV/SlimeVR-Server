@@ -358,6 +358,12 @@ export function InterfaceSettings() {
                   value={'toy'}
                   colors="!bg-toy"
                 ></ThemeSelector>
+                <ThemeSelector
+                  control={control}
+                  name="appearance.theme"
+                  value={'asexual'}
+                  colors="!bg-asexual"
+                ></ThemeSelector>
               </div>
             </div>
 
