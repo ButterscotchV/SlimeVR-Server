@@ -364,6 +364,12 @@ export function InterfaceSettings() {
                   value={'asexual'}
                   colors="!bg-asexual"
                 ></ThemeSelector>
+                <ThemeSelector
+                  control={control}
+                  name="appearance.theme"
+                  value={'windows-xp'}
+                  colors="!bg-windows-xp"
+                ></ThemeSelector>
               </div>
             </div>
 
