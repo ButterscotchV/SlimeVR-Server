@@ -150,6 +150,11 @@ const colors = {
     700: '#b3b3b3',
     900: '#d8d8d8',
   },
+  'toy': {
+    100: '#E64B46',
+    200: '#FFAA00',
+    300: '#5A9632',
+  },
 };
 
 const config = {
@@ -229,6 +234,7 @@ const config = {
         dark: `linear-gradient(135deg, ${colors['dark-accent'][100]} 50%, ${colors['dark-background'][700]} 50% 100%)`,
         light: `linear-gradient(135deg, ${colors['light-accent'][100]} 50%, ${colors['light-background'][700]} 50% 100%)`,
         'trans-flag': `linear-gradient(135deg, ${colors['trans-blue'][800]} 40%, ${colors['trans-blue'][700]} 40% 70%, ${colors['trans-blue'][600]} 70% 100%)`,
+        'toy': `linear-gradient(135deg, ${colors['toy'][100]} 40%, ${colors['toy'][200]} 40% 70%, ${colors['toy'][300]} 70% 100%)`,
       },
     },
     data: {

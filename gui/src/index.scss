@@ -316,6 +316,32 @@ body {
   --default-color: 0, 0, 0;
 }
 
+:root[data-theme='toy'] {
+  --background-10: 0, 0, 0;
+  --background-20: 25, 100, 130;
+  --background-30: 45, 45, 45;
+  --background-40: 255, 220, 100;
+  --background-50: 255, 145, 30;
+  --background-60: 90, 150, 50;
+  --background-70: 255, 170, 0;
+  --background-80: 230, 75, 70;
+  --background-90: 0, 0, 0;
+
+  --accent-background-10: 40, 40, 40;
+  --accent-background-20: 255, 210, 0;
+  --accent-background-30: 240, 125, 110;
+  --accent-background-40: 255, 200, 10;
+  --accent-background-50: 90, 150, 50;
+
+  --success: 100, 220, 100;
+  --warning: 255, 190, 55;
+  --critical: 230, 70, 100;
+  --special: 155, 40, 170;
+  --window-icon-stroke: 255, 200, 10;
+
+  --default-color: 29, 29, 29;
+}
+
 #root {
   height: 100%;
 }
