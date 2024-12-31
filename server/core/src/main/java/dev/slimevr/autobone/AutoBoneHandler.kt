@@ -437,8 +437,7 @@ class AutoBoneHandler(private val server: VRServer) {
 								val oldTrackerRotation = frame.tryGetRotation()
 								val newTrackerRotation =
 									if (oldTrackerRotation != null) {
-										rotation.times(oldTrackerRotation)
-											.times(rotation)
+										(rotation * oldTrackerRotation) * rotation.inv()
 									} else {
 										null
 									}
