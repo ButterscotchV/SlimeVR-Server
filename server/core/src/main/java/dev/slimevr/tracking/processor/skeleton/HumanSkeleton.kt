@@ -510,17 +510,11 @@ class HumanSkeleton(
 
 		updateTransforms()
 		updateBones()
-		if (enforceConstraints) {
-			// TODO re-enable toggling correctConstraints once
-			// https://github.com/SlimeVR/SlimeVR-Server/issues/1297 is solved
-			headBone.updateWithConstraints(false)
-		}
 		updateComputedTrackers()
 
 		// Don't run post-processing if the tracking is paused
 		if (pauseTracking) return
 
-		legTweaks.tweakLegs()
 		localizer.update()
 	}
 
@@ -800,119 +794,6 @@ class HumanSkeleton(
 			hipTrackerBone.setRotation(yawRot)
 		}
 
-		// Extended spine model
-		if (extendedSpineModel && hasSpineTracker) {
-			// Tries to guess missing lower spine trackers by interpolating rotations
-			if (waistTracker == null) {
-				getFirstAvailableTracker(chestTracker, upperChestTracker)?.let { chest ->
-					hipTracker?.let {
-						// Calculates waist from chest + hip
-						var hipRot = it.getRotation()
-						var chestRot = chest.getRotation()
-
-						// Get the rotation relative to where we expect the hip to be
-						if (chestRot.times(FORWARD_QUATERNION).dot(hipRot) < 0.0f) {
-							hipRot = hipRot.unaryMinus()
-						}
-
-						// Interpolate between the chest and the hip
-						chestRot = chestRot.interpQ(hipRot, waistFromChestHipAveraging)
-
-						// Set waist's rotation
-						waistBone.setRotation(chestRot)
-					} ?: run {
-						if (hasKneeTrackers) {
-							// Calculates waist from chest + legs
-							var leftLegRot = leftUpperLegTracker?.getRotation() ?: IDENTITY
-							var rightLegRot = rightUpperLegTracker?.getRotation() ?: IDENTITY
-							var chestRot = chest.getRotation()
-
-							// Get the rotation relative to where we expect the upper legs to be
-							val expectedUpperLegsRot = chestRot.times(FORWARD_QUATERNION)
-							if (expectedUpperLegsRot.dot(leftLegRot) < 0.0f) {
-								leftLegRot = leftLegRot.unaryMinus()
-							}
-							if (expectedUpperLegsRot.dot(rightLegRot) < 0.0f) {
-								rightLegRot = rightLegRot.unaryMinus()
-							}
-
-							// Interpolate between the pelvis, averaged from the legs, and the chest
-							chestRot = chestRot.interpQ(leftLegRot.lerpQ(rightLegRot, 0.5f), waistFromChestLegsAveraging).unit()
-
-							// Set waist's rotation
-							waistBone.setRotation(chestRot)
-						}
-					}
-				}
-			}
-			if (hipTracker == null && hasKneeTrackers) {
-				waistTracker?.let {
-					// Calculates hip from waist + legs
-					var leftLegRot = leftUpperLegTracker?.getRotation() ?: IDENTITY
-					var rightLegRot = rightUpperLegTracker?.getRotation() ?: IDENTITY
-					var waistRot = it.getRotation()
-
-					// Get the rotation relative to where we expect the upper legs to be
-					val expectedUpperLegsRot = waistRot.times(FORWARD_QUATERNION)
-					if (expectedUpperLegsRot.dot(leftLegRot) < 0.0f) {
-						leftLegRot = leftLegRot.unaryMinus()
-					}
-					if (expectedUpperLegsRot.dot(rightLegRot) < 0.0f) {
-						rightLegRot = rightLegRot.unaryMinus()
-					}
-
-					// Interpolate between the pelvis, averaged from the legs, and the chest
-					waistRot = waistRot.interpQ(leftLegRot.lerpQ(rightLegRot, 0.5f), hipFromWaistLegsAveraging).unit()
-
-					// Set hip rotation
-					hipBone.setRotation(waistRot)
-					hipTrackerBone.setRotation(waistRot)
-				} ?: run {
-					getFirstAvailableTracker(chestTracker, upperChestTracker)?.let {
-						// Calculates hip from chest + legs
-						var leftLegRot = leftUpperLegTracker?.getRotation() ?: IDENTITY
-						var rightLegRot = rightUpperLegTracker?.getRotation() ?: IDENTITY
-						var chestRot = it.getRotation()
-
-						// Get the rotation relative to where we expect the upper legs to be
-						val expectedUpperLegsRot = chestRot.times(FORWARD_QUATERNION)
-						if (expectedUpperLegsRot.dot(leftLegRot) < 0.0f) {
-							leftLegRot = leftLegRot.unaryMinus()
-						}
-						if (expectedUpperLegsRot.dot(rightLegRot) < 0.0f) {
-							rightLegRot = rightLegRot.unaryMinus()
-						}
-
-						// Interpolate between the pelvis, averaged from the legs, and the chest
-						chestRot = chestRot.interpQ(leftLegRot.lerpQ(rightLegRot, 0.5f), hipFromChestLegsAveraging).unit()
-
-						// Set hip rotation
-						hipBone.setRotation(chestRot)
-						hipTrackerBone.setRotation(chestRot)
-					}
-				}
-			}
-		}
-
-		// Extended pelvis model
-		if (extendedPelvisModel && hasKneeTrackers && hipTracker == null) {
-			val leftLegRot = leftUpperLegTracker?.getRotation() ?: IDENTITY
-			val rightLegRot = rightUpperLegTracker?.getRotation() ?: IDENTITY
-			val hipRot = hipBone.getLocalRotation()
-
-			val extendedPelvisRot = extendedPelvisYawRoll(leftLegRot, rightLegRot, hipRot)
-
-			// Interpolate between the hipRot and extendedPelvisRot
-			val newHipRot = hipRot.interpR(
-				if (extendedPelvisRot.lenSq() != 0.0f) extendedPelvisRot else IDENTITY,
-				hipLegsAveraging,
-			)
-
-			// Set new hip rotation
-			hipBone.setRotation(newHipRot)
-			hipTrackerBone.setRotation(newHipRot)
-		}
-
 		// Set left and right hip rotations to the hip's
 		leftHipBone.setRotation(hipBone.getLocalRotation())
 		rightHipBone.setRotation(hipBone.getLocalRotation())
@@ -959,22 +840,6 @@ class HumanSkeleton(
 		// Set foot rotation
 		footBone.setRotation(legRot)
 		footTrackerBone.setRotation(legRot)
-
-		// Extended knee model
-		if (extendedKneeModel) {
-			upperLegTracker?.let { upper ->
-				lowerLegTracker?.let { lower ->
-					// Averages the upper leg's rotation with the local lower leg's
-					// pitch and roll and apply to the tracker node.
-					val upperRot = upper.getRotation()
-					val lowerRot = lower.getRotation()
-					val extendedRot = extendedKneeYawRoll(upperRot, lowerRot)
-
-					upperLegBone.setRotation(upperRot.interpR(extendedRot, kneeAnkleAveraging))
-					kneeTrackerBone.setRotation(upperRot.interpR(extendedRot, kneeTrackerAnkleAveraging))
-				}
-			}
-		}
 	}
 
 	/**

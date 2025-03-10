@@ -316,9 +316,6 @@ class Tracker @JvmOverloads constructor(
 	fun dataTick() {
 		timer.update()
 		timeAtLastUpdate = System.currentTimeMillis()
-		if (trackRotDirection) {
-			filteringHandler.dataTick(_rotation)
-		}
 	}
 
 	/**
@@ -328,12 +325,7 @@ class Tracker @JvmOverloads constructor(
 		timeAtLastUpdate = System.currentTimeMillis()
 	}
 
-	private fun getFilteredRotation(): Quaternion = if (trackRotDirection) {
-		filteringHandler.getFilteredRotation()
-	} else {
-		// Get raw rotation
-		_rotation
-	}
+	private fun getFilteredRotation(): Quaternion = _rotation
 
 	/**
 	 * Gets the adjusted tracker rotation after all corrections
