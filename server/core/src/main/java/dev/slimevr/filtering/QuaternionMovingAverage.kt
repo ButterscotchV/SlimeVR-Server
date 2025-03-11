@@ -2,6 +2,7 @@ package dev.slimevr.filtering
 
 import com.jme3.system.NanoTimer
 import dev.slimevr.VRServer
+import io.eiren.util.logging.LogManager
 import io.github.axisangles.ktmath.Quaternion
 import io.github.axisangles.ktmath.Quaternion.Companion.IDENTITY
 import kotlin.math.abs
@@ -100,6 +101,8 @@ class QuaternionMovingAverage(
 		if (abs(dotDiff) > 1.5f) {
 			// Flip polarity
 			flipped = !flipped
+
+			LogManager.debug("[QuaternionMovingAverage] ${if (flipped) "Negative" else "Positive"} tracked quaternion (dot = $dot, dotDiff = $dotDiff)")
 		}
 
 		val polQ = if (flipped) -q else q
