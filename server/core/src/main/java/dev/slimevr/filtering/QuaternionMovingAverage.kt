@@ -103,6 +103,7 @@ class QuaternionMovingAverage(
 			flipped = !flipped
 
 			LogManager.debug("[QuaternionMovingAverage] ${if (flipped) "Negative" else "Positive"} tracked quaternion (dot = $dot, dotDiff = $dotDiff)")
+			LogManager.debug("[QuaternionMovingAverage] Last quat <$latestQuaternion> cur quat <$q>")
 		}
 
 		val polQ = if (flipped) -q else q
