@@ -1,5 +1,7 @@
 package dev.slimevr.autobone
 
+import dev.slimevr.util.StatsCalculator
+
 class AutoBoneStep(
 	var hmdHeight: Float = 1f,
 	val targetHmdHeight: Float = 1f,

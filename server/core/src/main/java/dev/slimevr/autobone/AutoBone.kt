@@ -12,6 +12,7 @@ import dev.slimevr.tracking.processor.HumanPoseManager
 import dev.slimevr.tracking.processor.config.SkeletonConfigManager
 import dev.slimevr.tracking.processor.config.SkeletonConfigOffsets
 import dev.slimevr.tracking.trackers.TrackerRole
+import dev.slimevr.util.StatsCalculator
 import io.eiren.util.OperatingSystem
 import io.eiren.util.StringUtils
 import io.eiren.util.collections.FastList

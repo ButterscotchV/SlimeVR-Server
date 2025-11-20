@@ -1,6 +1,6 @@
-package dev.slimevr.autobone
+package dev.slimevr.util
 
-import kotlin.math.*
+import kotlin.math.sqrt
 
 /**
  * This is a stat calculator based on Welford's online algorithm
