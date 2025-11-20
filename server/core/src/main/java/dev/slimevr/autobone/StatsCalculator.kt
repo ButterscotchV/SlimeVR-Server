@@ -26,6 +26,14 @@ class StatsCalculator {
 		m2 += delta * delta2
 	}
 
+	fun removeValue(newValue: Float) {
+		count -= 1
+		val delta = newValue - mean
+		mean -= delta / count
+		val delta2 = newValue - mean
+		m2 -= delta * delta2
+	}
+
 	val variance: Float
 		get() = if (count < 1) {
 			Float.NaN
