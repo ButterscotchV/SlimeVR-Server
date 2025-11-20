@@ -318,10 +318,6 @@ class TrackersUDPServer(private val port: Int, name: String, private val tracker
 					}
 				} catch (ignored: SocketTimeoutException) {
 				} catch (e: Exception) {
-					LogManager.warning(
-						"[TrackerServer] Error parsing packet ${packetToString(received)}",
-						e,
-					)
 				}
 				if (lastKeepup + 500 < System.currentTimeMillis()) {
 					lastKeepup = System.currentTimeMillis()
@@ -615,24 +611,5 @@ class TrackersUDPServer(private val port: Int, name: String, private val tracker
 		 */
 		private val AXES_OFFSET = fromRotationVector(-FastMath.HALF_PI, 0f, 0f)
 		private const val RESET_SOURCE_NAME = "TrackerServer"
-		private fun packetToString(packet: DatagramPacket?): String {
-			val sb = StringBuilder()
-			sb.append("DatagramPacket{")
-			if (packet == null) {
-				sb.append("null")
-			} else {
-				sb.append(packet.address.toString())
-				sb.append(':')
-				sb.append(packet.port)
-				sb.append(',')
-				sb.append(packet.length)
-				sb.append(',')
-				sb.append('{')
-				sb.append(HexFormat.ofDelimiter(",").formatHex(packet.data, 0, packet.length))
-				sb.append('}')
-			}
-			sb.append('}')
-			return sb.toString()
-		}
 	}
 }
