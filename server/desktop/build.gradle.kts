@@ -63,9 +63,10 @@ dependencies {
 	implementation("com.google.protobuf:protobuf-java:4.31.1")
 	implementation("net.java.dev.jna:jna:5.+")
 	implementation("net.java.dev.jna:jna-platform:5.+")
-	implementation("com.fazecast:jSerialComm:2.11.3") {
-		exclude(group = "com.fazecast", module = "android")
-	}
+	//implementation("com.fazecast:jSerialComm:2.11.3") {
+	//	exclude(group = "com.fazecast", module = "android")
+	//}
+	implementation(files("jSerialComm-2.12.0.jar"))
 	implementation("org.hid4java:hid4java:0.8.0")
 }
 
